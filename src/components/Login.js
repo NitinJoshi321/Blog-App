@@ -1,51 +1,58 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from 'react-redux'
+import { useDispatch } from "react-redux";
 import { addUserData } from "../features/userSlice";
+import { Oval } from "react-loader-spinner";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [emailError, setEmailError] = useState("")
-  const [passwordError, setPasswordError] = useState("")
-  const [error,setError] = useState("")
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [error, setError] = useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
   // const [userLoginData, setUserLoginData] = useState([])
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const handleLoginUser = async(e) => {
+  const handleLoginUser = async (e) => {
     e.preventDefault();
-
-    if(!email){
-      setEmailError('Please Enter Email')
+    setLoggedIn(true);
+    if (!email) {
+      setEmailError("Please Enter Email");
     }
-    if(!password){
-      setPasswordError('Please Enter Password')
-    }
-    if(!email || !password){
-      return
+    if (!password) {
+      setPasswordError("Please Enter Password");
     }
     
-    try{
-      const response = await axios.post('https://api.realworld.io/api/users/login',{
-        user : {
-          email:email,
-          password:password
+    if (!email || !password) {
+      setLoggedIn(false)
+      return;
+    }
+    
+    try {
+      const response = await axios.post(
+        "https://api.realworld.io/api/users/login",
+        {
+          user: {
+            email: email,
+            password: password,
+          },
         }
-      })
-      if(response.status === 200){
-        console.log('userLogin',response.data.user)
-        const data = response.data.user
-        dispatch(addUserData(data))
-        const token = response.data.user.token
-        localStorage.setItem('token',token)
-        localStorage.setItem('loginData',JSON.stringify(response.data.user))
-        navigate('/articles')
+      );
+      if (response.status === 200) {
+        console.log("userLogin", response.data.user);
+        const data = response.data.user;
+        dispatch(addUserData(data));
+        const token = response.data.user.token;
+        localStorage.setItem("token", token);
+        localStorage.setItem("loginData", JSON.stringify(response.data.user));
+        navigate("/articles");
       }
-    }catch(error){
-      console.error('login request failed',error.message)
-      setError("Email or Password is incorrect")
+    } catch (error) {
+      console.error("login request failed", error.message);
+      setError("Email or Password is incorrect");
     }
     // console.log('userData',userData)
   };
@@ -68,7 +75,7 @@ export default function Login() {
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-green-500"
                 onChange={(e) => {
                   setEmail(e.target.value);
-                  setEmailError('')
+                  setEmailError("");
                 }}
               />
               {emailError && <span className="text-red-500">{emailError}</span>}
@@ -84,23 +91,42 @@ export default function Login() {
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-green-500"
                 onChange={(e) => {
                   setPassword(e.target.value);
-                  setPasswordError('')
+                  setPasswordError("");
                 }}
               />
               {passwordError && (
                 <span className="text-red-500">{passwordError}</span>
               )}
             </div>
-            {error && (
-                <span className="text-red-500">{error}</span>
-              )}
-            <button
+            {error && <span className="text-red-500">{error}</span>}
+            {loggedIn ? (
+              <div className="flex justify-center">
+              <Oval
+                visible={true}
+                height="40"
+                width="40"
+                color="#4fa94d"
+                ariaLabel="oval-loading"
+                wrapperStyle={{}}
+                wrapperClass=""
+              />
+              </div>
+            ) : (
+              <button
+                type="submit"
+                className="bg-green-700 w-full p-3 rounded text-white text-xl my-2"
+                onClick={handleLoginUser}
+              >
+                Login
+              </button>
+            )}
+            {/* <button
               type="submit"
               className="bg-green-700 w-full p-3 rounded text-white text-xl my-2"
               onClick={handleLoginUser}
             >
               Login
-            </button>
+            </button> */}
           </form>
           <div className="text-center">
             New User?{" "}

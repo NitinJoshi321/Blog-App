@@ -11,7 +11,7 @@ import ProfileHeader from "./ProfileHeader";
 export default function Articles() {
   const [articlesData, setArticlesData] = useState([]);
   const [offset, setOffset] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   // const navigate = useNavigate();
   // const loginData = useSelector((state) => state.userData);
   const loginData = JSON.parse(localStorage.getItem('loginData'))
@@ -49,6 +49,7 @@ export default function Articles() {
   console.log("articlesData", articlesData);
 
   useEffect(() => {
+    setLoading(true)
     axios
       .get(`https://api.realworld.io/api/articles?limit=5`)
       .then((response) => {
@@ -132,8 +133,11 @@ export default function Articles() {
                     </span>
                   </div>
                 </div>
-                <div className="flex flex-row items-center gap-2 border p-2 rounded-md" onClick={()=>handleFavouritesCount(article.favouritesCount)}>
-                  <HeartComponent value={article}/>
+                <div
+                  className="flex flex-row items-center gap-2 border p-2 rounded-md"
+                  onClick={() => handleFavouritesCount(article.favouritesCount)}
+                >
+                  <HeartComponent value={article} />
                   <span className="text-base">{article.favoritesCount}</span>
                 </div>
               </div>
@@ -150,7 +154,9 @@ export default function Articles() {
             </div>
             <div className="text-right mb-4">
               {article.tagList.map((tag) => (
-                <span className="px-2 py-1 text-gray-400 border rounded-2xl m-2">{tag}</span>
+                <span className="px-2 py-1 text-gray-400 border rounded-2xl m-2">
+                  {tag}
+                </span>
               ))}
             </div>
             <hr />
@@ -161,8 +167,8 @@ export default function Articles() {
           <div className="flex justify-center mt-2">
             <Oval
               visible={true}
-              height="30"
-              width="40"
+              height="80"
+              width="80"
               color="#4fa94d"
               ariaLabel="oval-loading"
               wrapperStyle={{}}
