@@ -13,9 +13,9 @@ export default function Articles() {
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(false);
   // const navigate = useNavigate();
-  const loginData = useSelector((state) => state.userData);
-  // const loginData = JSON.parse(localStorage.getItem("loginData"));
-  // localStorage.setItem('loginData', JSON.stringify(loginData));
+  // const loginData = useSelector((state) => state.userData);
+  const loginData = JSON.parse(localStorage.getItem("loginData"));
+  localStorage.setItem('loginData', JSON.stringify(loginData));
 
   const handleInfiniteScroll = () => {
     // console.log("scrollHeight",document.documentElement.scrollHeight)
