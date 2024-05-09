@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 // import Loader from "./Loader";
 import { Oval } from "react-loader-spinner";
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 // import Heart from "react-animated-heart";
 import HeartComponent from "./HeartComponent";
 import ProfileHeader from "./ProfileHeader";
