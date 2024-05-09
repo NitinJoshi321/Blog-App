@@ -13,8 +13,8 @@ export default function Articles() {
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(false);
   // const navigate = useNavigate();
-  // const loginData = useSelector((state) => state.userData);
-  const loginData = JSON.parse(localStorage.getItem('loginData'))
+  const loginData = useSelector((state) => state.userData);
+  // const loginData = JSON.parse(localStorage.getItem("loginData"));
   // localStorage.setItem('loginData', JSON.stringify(loginData));
 
   const handleInfiniteScroll = () => {
@@ -49,16 +49,16 @@ export default function Articles() {
   console.log("articlesData", articlesData);
 
   useEffect(() => {
-    setLoading(true)
+    setLoading(true);
     axios
       .get(`https://api.realworld.io/api/articles?limit=5`)
       .then((response) => {
-        // console.log(response.data)
+        console.log(response);
         const newData = response.data.articles;
         setArticlesData(newData);
         setLoading(false);
       });
-      // localStorage.setItem('loginData',loginData)
+    // localStorage.setItem('loginData',loginData)
     window.addEventListener("scroll", handleInfiniteScroll);
     return () => window.removeEventListener("scroll", handleInfiniteScroll);
   }, []);
@@ -71,21 +71,71 @@ export default function Articles() {
 
   const dateFormat = (timestamp) => {
     const date = new Date(timestamp);
-  
+
     const options = {
       year: "numeric",
       month: "short",
-      day: "2-digit"
+      day: "2-digit",
     };
-  
+
     const formattedDate = date.toLocaleDateString("en-US", options);
-    
+
     return formattedDate;
   };
 
-  const handleFavouritesCount = (favoritesCount)=>{
-    console.log("fav count",favoritesCount)
-  }
+  const handleFavouritesCount = (article) => {
+    const { slug, favorited, favoritesCount } = article;
+    const authToken = localStorage.getItem("token");
+    console.log(authToken);
+    console.log(article);
+    // console.log("slug",slug)
+    // console.log('fav',favorited)
+    // console.log("count",favoritesCount)
+
+    const updatedFavorited = !favorited;
+    const updatedFavoritesCount = favorited
+      ? favoritesCount - 1
+      : favoritesCount + 1;
+
+    console.log("updatefav", updatedFavorited);
+    console.log("count", updatedFavoritesCount);
+
+    axios
+      .put(
+        `https://api.realworld.io/api/articles/${slug}`,
+        {
+          article: {
+            favorited: updatedFavorited,
+            favoritesCount: updatedFavoritesCount,
+          },
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      )
+      .then((response) => {
+        console.log("put", response);
+        // Update local state with updated article data
+        // const updatedArticles = articlesData.map((item) => {
+        //   if (item.slug === slug) {
+        //     return {
+        //       ...item,
+        //       favorited: updatedFavorited,
+        //       favoritesCount: updatedFavoritesCount,
+        //     };
+        //   }
+        //   return item;
+        // });
+
+        // setArticlesData(updatedArticles);
+      })
+      .catch((error) => {
+        console.error("Failed to update article", error);
+      });
+  };
 
   return (
     <>
@@ -135,21 +185,22 @@ export default function Articles() {
                 </div>
                 <div
                   className="flex flex-row items-center gap-2 border p-2 rounded-md"
-                  onClick={() => handleFavouritesCount(article.favouritesCount)}
+                  onClick={() => handleFavouritesCount(article)}
                 >
                   <HeartComponent value={article} />
                   <span className="text-base">{article.favoritesCount}</span>
                 </div>
               </div>
 
-              <Link to={`/article/${article.slug}`}>
-                <h2 className="font-bold text-2xl cursor-pointer">
-                  {article.title}
-                </h2>
-              </Link>
+              <h2 className="font-bold text-2xl cursor-pointer">
+                {article.title}
+              </h2>
+
               <h2 className="text-gray-400">{article.description}</h2>
               <h2 className="text-gray-400">
                 {article.body.substring(0, 100)}
+                
+                  <span>....<Link to={`/article/${article.slug}`}><span className="text-blue-400">read more</span></Link></span>
               </h2>
             </div>
             <div className="text-right mb-4">
@@ -164,15 +215,13 @@ export default function Articles() {
         ))}
 
         {loading && (
-          <div className="flex justify-center mt-2">
+          <div className="flex justify-center items-center h-screen">
             <Oval
               visible={true}
-              height="80"
-              width="80"
+              height="40"
+              width="40"
               color="#4fa94d"
               ariaLabel="oval-loading"
-              wrapperStyle={{}}
-              wrapperClass=""
             />
           </div>
         )}

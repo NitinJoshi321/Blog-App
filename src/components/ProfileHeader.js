@@ -39,15 +39,18 @@ function ProfileHeader({ data }) {
     // You can add logic to clear user data, such as local storage
   };
   const handleCreateArticle =()=>{
-    console.log('create')
+    // console.log('create')
+    navigate('/create')
   }
 
   const handleFavourites =()=>{
-    console.log('fav')
+    // console.log('fav')
+    navigate('/favourites')
   }
 
   const handleProfile =()=>{
-    console.log('profile')
+    // console.log('profile')
+    navigate('/profile')
   }
 
   return (

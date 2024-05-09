@@ -20,7 +20,7 @@ export default function ArticleDetailPage() {
         const selectedData = response.data.article;
         setArticleData([selectedData]);
       });
-  }, []);
+  }, [slug]);
 
   console.log("Selected Article:", articleData);
 
